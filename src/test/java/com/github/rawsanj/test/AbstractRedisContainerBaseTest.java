@@ -1,7 +1,9 @@
 package com.github.rawsanj.test;
 
 import com.github.rawsanj.SpringRedisWebSocketApplication;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
@@ -11,22 +13,19 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.containers.GenericContainer;
 
-@Slf4j
 @SpringBootTest
-@ContextConfiguration(
-	initializers = AbstractRedisContainerBaseTest.Initializer.class,
-	classes = {SpringRedisWebSocketApplication.class, AbstractRedisContainerBaseTest.ApplicationStoppedListener.class}
-)
+@ContextConfiguration(initializers = AbstractRedisContainerBaseTest.Initializer.class, classes = {
+		SpringRedisWebSocketApplication.class, AbstractRedisContainerBaseTest.ApplicationStoppedListener.class })
 public class AbstractRedisContainerBaseTest {
+
+	private static Logger log = LoggerFactory.getLogger(AbstractRedisContainerBaseTest.class);
 
 	private static final String REDIS_IMAGE = "bitnami/redis:6.0.9";
 	private static final String REDIS_PASSWORD = "SuperSecretRedisPassword";
 	private static final Integer REDIS_PORT = 6379;
 
 	private static final GenericContainer redisContainer = new GenericContainer<>(REDIS_IMAGE)
-		.withExposedPorts(REDIS_PORT)
-		.withEnv("REDIS_PASSWORD", REDIS_PASSWORD)
-		.withReuse(true);
+			.withExposedPorts(REDIS_PORT).withEnv("REDIS_PASSWORD", REDIS_PASSWORD).withReuse(true);
 
 	public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
@@ -39,7 +38,8 @@ public class AbstractRedisContainerBaseTest {
 			String redisContainerIP = "spring.redis.host=" + redisContainer.getContainerIpAddress();
 			String redisContainerPort = "spring.redis.port=" + redisContainer.getMappedPort(REDIS_PORT);
 			String redisContainerPassword = "spring.redis.password=" + REDIS_PASSWORD;
-			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, redisContainerIP, redisContainerPort, redisContainerPassword); // <- This is how you override the configuration in runtime.
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, redisContainerIP, redisContainerPort,
+					redisContainerPassword); // <- This is how you override the configuration in runtime.
 		}
 	}
 
@@ -52,4 +52,3 @@ public class AbstractRedisContainerBaseTest {
 		}
 	}
 }
-

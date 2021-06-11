@@ -3,7 +3,9 @@ package com.github.rawsanj.handler;
 import com.github.rawsanj.messaging.RedisChatMessagePublisher;
 import com.github.rawsanj.model.ChatMessage;
 import com.github.rawsanj.util.ObjectStringConverter;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -12,8 +14,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-@Slf4j
 public class ChatWebSocketHandler implements WebSocketHandler {
+	
+	private static Logger log = LoggerFactory.getLogger(ChatWebSocketHandler.class);
 
 	private final Sinks.Many<ChatMessage> chatMessageSink;
 	private final Flux<ChatMessage> chatMessageFluxSink;

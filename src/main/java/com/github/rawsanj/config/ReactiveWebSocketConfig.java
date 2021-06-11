@@ -4,7 +4,6 @@ import com.github.rawsanj.handler.ChatWebSocketHandler;
 import com.github.rawsanj.messaging.RedisChatMessagePublisher;
 import com.github.rawsanj.model.ChatMessage;
 import com.github.rawsanj.util.ObjectStringConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.support.atomic.RedisAtomicLong;
@@ -21,7 +20,6 @@ import java.util.Map;
 
 import static com.github.rawsanj.config.ChatConstants.WEBSOCKET_MESSAGE_MAPPING;
 
-@Slf4j
 @Configuration(proxyBeanMethods = false)
 public class ReactiveWebSocketConfig {
 

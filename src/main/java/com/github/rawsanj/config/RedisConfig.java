@@ -1,7 +1,9 @@
 package com.github.rawsanj.config;
 
 import com.github.rawsanj.messaging.RedisChatMessageListener;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -19,14 +21,16 @@ import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import static com.github.rawsanj.config.ChatConstants.ACTIVE_USER_KEY;
 import static com.github.rawsanj.config.ChatConstants.MESSAGE_COUNTER_KEY;
 
-@Slf4j
-@Configuration(proxyBeanMethods=false)
+@Configuration(proxyBeanMethods = false)
 @Profile("!heroku")
 public class RedisConfig {
 
+	private static Logger log = LoggerFactory.getLogger(RedisConfig.class);
+
 	@Bean
 	ReactiveRedisConnectionFactory reactiveRedisConnectionFactory(RedisProperties redisProperties) {
-		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
+				redisProperties.getHost(), redisProperties.getPort());
 		redisStandaloneConfiguration.setPassword(redisProperties.getPassword());
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
@@ -36,7 +40,8 @@ public class RedisConfig {
 		return new ReactiveStringRedisTemplate(reactiveRedisConnectionFactory);
 	}
 
-	// Redis Atomic Counter to store no. of total messages sent from multiple app instances.
+	// Redis Atomic Counter to store no. of total messages sent from multiple app
+	// instances.
 	@Bean
 	RedisAtomicInteger chatMessageCounter(RedisConnectionFactory redisConnectionFactory) {
 		return new RedisAtomicInteger(MESSAGE_COUNTER_KEY, redisConnectionFactory);
@@ -52,10 +57,9 @@ public class RedisConfig {
 	ApplicationRunner applicationRunner(RedisChatMessageListener redisChatMessageListener) {
 		return args -> {
 			redisChatMessageListener.subscribeMessageChannelAndPublishOnWebSocket()
-				.doOnSubscribe(subscription -> log.info("Redis Listener Started"))
-				.doOnError(throwable -> log.error("Error listening to Redis topic.", throwable))
-				.doFinally(signalType -> log.info("Stopped Listener. Signal Type: {}", signalType))
-				.subscribe();
+					.doOnSubscribe(subscription -> log.info("Redis Listener Started"))
+					.doOnError(throwable -> log.error("Error listening to Redis topic.", throwable))
+					.doFinally(signalType -> log.info("Stopped Listener. Signal Type: {}", signalType)).subscribe();
 		};
 	}
 

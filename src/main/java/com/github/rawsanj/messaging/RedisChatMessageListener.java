@@ -3,7 +3,6 @@ package com.github.rawsanj.messaging;
 import com.github.rawsanj.handler.ChatWebSocketHandler;
 import com.github.rawsanj.model.ChatMessage;
 import com.github.rawsanj.util.ObjectStringConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono;
 import static com.github.rawsanj.config.ChatConstants.MESSAGE_TOPIC;
 
 @Component
-@Slf4j
 public class RedisChatMessageListener {
 
 	private final ReactiveStringRedisTemplate reactiveStringRedisTemplate;
